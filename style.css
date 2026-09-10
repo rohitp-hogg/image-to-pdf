@@ -1,0 +1,57 @@
+/* Using a Google Font for a cleaner look */
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+/* Custom class for the drag-and-drop highlight effect */
+.drag-area-highlight {
+    border-color: #4f46e5; /* indigo-600 */
+    box-shadow: 0 0 15px rgba(79, 70, 229, 0.4);
+}
+
+/* Fancy animated progress bar */
+.progress-bar-inner {
+    transition: width 0.4s ease-in-out;
+}
+
+/* Custom styling for the scrollable preview area */
+#image-preview {
+    max-height: 22rem; /* approx h-88 in Tailwind */
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #94a3b8 #e2e8f0; /* slate-400 slate-200 */
+}
+
+/* Custom scrollbar for Webkit browsers (Chrome, Safari) */
+#image-preview::-webkit-scrollbar {
+    width: 8px;
+}
+
+#image-preview::-webkit-scrollbar-track {
+    background: transparent; /* Makes the track invisible */
+}
+
+#image-preview::-webkit-scrollbar-thumb {
+    background-color: #94a3b8; /* slate-400 */
+    border-radius: 10px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+}
+
+#image-preview::-webkit-scrollbar-thumb:hover {
+    background-color: #64748b; /* slate-500 */
+}
+
+/* Dark mode scrollbar styles */
+.dark #image-preview {
+    scrollbar-color: #475569 #1e293b; /* slate-600 slate-800 */
+}
+
+.dark #image-preview::-webkit-scrollbar-thumb {
+    background-color: #475569; /* slate-600 */
+}
+
+.dark #image-preview::-webkit-scrollbar-thumb:hover {
+    background-color: #64748b; /* slate-500 */
+}
+

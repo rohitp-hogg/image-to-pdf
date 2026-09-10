@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image to PDF Converter</title>
+    <!-- Tailwind CSS for modern styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- jsPDF library for client-side PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Theme-switching script to run before page load -->
+    <script>
+        // Placed in head to avoid Flash of Unstyled Content (FOUC)
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+</head>
+<body class="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-200 flex items-center justify-center min-h-screen p-4 transition-colors duration-300">
+
+    <div class="w-full max-w-5xl">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl p-6 md:p-10 relative">
+            <!-- Theme Toggle Button -->
+            <button id="theme-toggle" type="button" class="text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 focus:outline-none focus:ring-4 focus:ring-slate-200 dark:focus:ring-slate-700 rounded-lg text-sm p-2.5 absolute top-4 right-4">
+                <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+            </button>
+
+            <header class="text-center mb-8">
+                <h1 class="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white">Image to PDF Converter</h1>
+                <p class="text-slate-500 dark:text-slate-400 mt-2">Upload your images, and we'll craft a beautiful PDF for you.</p>
+            </header>
+
+            <main id="main-layout" class="grid grid-cols-1 gap-8">
+                <!-- Left Column: Upload and Actions -->
+                <div class="flex flex-col">
+                    <!-- File Upload Section -->
+                    <div id="upload-container">
+                        <label for="image-upload" class="flex flex-col items-center justify-center w-full h-64 border-2 border-slate-300 dark:border-slate-600 border-dashed rounded-xl cursor-pointer bg-slate-50 dark:bg-slate-700 hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors" id="drag-area">
+                            <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                <svg class="w-10 h-10 mb-4 text-slate-500 dark:text-slate-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                                </svg>
+                                <p class="mb-2 text-sm text-slate-500 dark:text-slate-400"><span class="font-semibold">Click to upload</span> or drag and drop</p>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">PNG, JPG, or WEBP</p>
+                            </div>
+                            <input id="image-upload" type="file" class="hidden" multiple accept="image/png, image/jpeg, image/webp" />
+                        </label>
+                    </div>
+
+                     <!-- Action Buttons & Progress Bar -->
+                    <div id="action-container" class="mt-8 text-center opacity-0 pointer-events-none transition-opacity duration-500 ease-in-out">
+                        <button id="create-pdf-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-indigo-300 dark:focus:ring-indigo-800">
+                            Create PDF
+                        </button>
+                        
+                        <div id="progress-section" class="mt-6 hidden">
+                            <p id="progress-text" class="text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Creating your PDF...</p>
+                            <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-4">
+                                <div id="progress-bar" class="progress-bar-inner bg-gradient-to-r from-sky-400 to-indigo-500 h-4 rounded-full" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Image Preview -->
+                <div id="preview-container" class="opacity-0 pointer-events-none transition-opacity duration-500 ease-in-out">
+                    <h2 class="text-xl font-semibold mb-4 text-slate-900 dark:text-white">Image Preview</h2>
+                    <div id="image-preview" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 gap-4 bg-slate-50 dark:bg-slate-700/50 p-4 rounded-lg">
+                        <!-- Image previews will be injected here -->
+                    </div>
+                </div>
+
+            </main>
+        </div>
+        <footer class="text-center mt-6">
+            <p class="text-sm text-slate-500 dark:text-slate-400">Created with ❤️ and modern web tech.</p>
+        </footer>
+    </div>
+    <!-- Custom Script -->
+    <script src="script.js"></script>
+</body>
+</html>
+
